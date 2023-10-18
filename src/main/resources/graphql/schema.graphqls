@@ -1,0 +1,134 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+directive @assertFalse on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @pattern(regexp: String!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @negative on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @min(value: Long!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @assertTrue on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @negativeOrZero on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @notBlank on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @futureOrPresent on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @email(regexp: String = ".*") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @max(value: Long!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @past on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @length(max: Int = 2147483647, min: Int = 0) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @positive on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @pastOrPresent on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @url on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @positiveOrZero on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @decimalMax(inclusive: Boolean = true, value: String!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @size(max: Int = 2147483647, min: Int = 0) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @null on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @future on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @digits(fraction: Int!, integer: Int!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @notEmpty on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @decimalMin(inclusive: Boolean = true, value: String!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @javaType(name: String!) on SCALAR | OBJECT | INPUT_OBJECT
+
+"Query root"
+type Query {
+    checkAuthenticated: Void # a system query to check whether a user is authenticated or not. If not, GraphQL error is returned.
+    userInfo: UserInfo # a system query to get an authenticated user details
+    userPermissions: [String] # a system query to security roles for an authenticated user
+    pet(id: ID!): Pet!
+    petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
+}
+
+type Mutation {
+    deletePet(id: ID!): Void
+    updatePet(input: PetInput!): Pet!
+}
+
+"Contains information about user"
+type UserInfo {
+    id: String! # user identifier
+    fullName: String # user display name, e.g. full name or username
+    avatar: String # user's profile picture as URL or Base64 string
+}
+
+type Pet {
+    id: ID
+    identifier: String
+    name: String
+    passport: String
+}
+
+type PetResultPage {
+    content: [Pet]
+    totalElements: Long!
+}
+
+enum SortDirection {
+    ASC
+    DESC
+}
+
+enum PetOrderByProperty {
+    IDENTIFIER
+    NAME
+}
+
+input OffsetPageInput {
+    number: Int!
+    size: Int!
+}
+
+input PetInput {
+    id: ID
+    identifier: String
+    name: String
+    passport: String
+}
+
+input PetOrderByInput {
+    direction: SortDirection
+    property: PetOrderByProperty
+}
+
+scalar BigDecimal @javaType(name: "java.math.BigDecimal")
+
+scalar BigInteger @javaType(name: "java.math.BigInteger")
+
+scalar Date @javaType(name: "java.time.LocalDate")
+
+scalar DateTime @javaType(name: "java.time.OffsetDateTime")
+
+scalar LocalDateTime @javaType(name: "java.time.LocalDateTime")
+
+scalar LocalTime @javaType(name: "java.time.LocalTime")
+
+scalar Long @javaType(name: "java.lang.Long")
+
+scalar Time @javaType(name: "java.time.OffsetTime")
+
+scalar Timestamp @javaType(name: "java.util.Date")
+
+scalar Url @javaType(name: "java.net.URL")
+
+scalar Void @javaType(name: "java.lang.Void")

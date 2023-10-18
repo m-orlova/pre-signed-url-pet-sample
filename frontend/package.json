@@ -1,0 +1,78 @@
+{
+  "name": "pre-signed-url-pet-sample",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "~3.7.7",
+    "@haulmont/ra-language-russian": "^4.0.0",
+    "@mui/x-date-pickers": "^6.14.0",
+    "@react-buddy/ide-toolbox": "^2.4.0",
+    "@react-buddy/palette-mui": "^5.0.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "change-case": "^4.1.2",
+    "dayjs": "^1.11.7",
+    "decimal.js": "^10.4.3",
+    "gql-query-builder": "^3.8.0",
+    "graphql": "^16.8.1",
+    "material-react-table": "^1.12.0",
+    "pluralize": "^8.0.0",
+    "ra-i18n-polyglot": "^4.13.1",
+    "react": "^18.2.0",
+    "react-admin": "^4.13.1",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.9.5",
+    "web-vitals": "^3.1.1"
+  },
+  "scripts": {
+    "dev": "vite --port 3000",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "generate": "graphql-codegen",
+    "generate:watch": "graphql-codegen --watch",
+    "test": "jest",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@amplicode/gql": "file:src/gql",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-react": "^7.8.3",
+    "@graphql-codegen/cli": "^3.0.0",
+    "@graphql-codegen/gql-tag-operations-preset": "^2.0.0",
+    "@graphql-codegen/typescript": "^3.0.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.7",
+    "@types/pluralize": "^0.0.29",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@vitejs/plugin-react": "^4.1.0",
+    "babel-jest": "^27.5.1",
+    "eslint": "^8.31.0",
+    "eslint-config-react-app": "^7.0.1",
+    "jest": "^27.5.1",
+    "jest-raw-loader": "^1.0.1",
+    "mockdate": "^3.0.5",
+    "prettier": "^2.8.8",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.9",
+    "whatwg-fetch": "^3.6.2"
+  },
+  "amplicode": {
+    "generator": "react-admin:app",
+    "generatorVersion": "0.58.0"
+  }
+}
