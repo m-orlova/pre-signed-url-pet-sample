@@ -1,6 +1,6 @@
-package com.company.presignedurlpetsample.repository;
+package com.company.petsample.repository;
 
-import com.company.presignedurlpetsample.entity.Pet;
+import com.company.petsample.entity.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

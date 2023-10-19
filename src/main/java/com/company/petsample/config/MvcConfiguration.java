@@ -1,6 +1,5 @@
-package com.company.presignedurlpetsample.config;
+package com.company.petsample.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;

@@ -1,4 +1,4 @@
-package com.company.presignedurlpetsample.config;
+package com.company.petsample.config;
 
 import com.amplicode.core.auth.AuthenticationInfoProvider;
 import com.amplicode.core.auth.UserDetailsAuthenticationInfoProvider;

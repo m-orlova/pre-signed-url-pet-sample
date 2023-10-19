@@ -1,4 +1,4 @@
-package com.company.presignedurlpetsample.entity;
+package com.company.petsample.entity;
 
 import jakarta.persistence.*;
 

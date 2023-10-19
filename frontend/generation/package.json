@@ -1,5 +1,5 @@
 {
-  "name": "pre-signed-url-pet-sample-generation",
+  "name": "pet-sample-generation",
   "devDependencies": {
     "@amplicode/codegen": "0.58.0"
   },

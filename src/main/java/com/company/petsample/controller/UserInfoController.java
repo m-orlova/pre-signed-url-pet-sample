@@ -1,4 +1,4 @@
-package com.company.presignedurlpetsample.controller;
+package com.company.petsample.controller;
 
 import com.amplicode.core.auth.AuthenticationInfoProvider;
 import jakarta.validation.constraints.NotNull;
