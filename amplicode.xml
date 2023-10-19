@@ -39,7 +39,7 @@
     <persistence-units>
       <persistence-unit name="Default" defaultIncludeChangeLogFile="src/main/resources/db/changelog.xml">
         <packages>
-          <package value="com.company.presignedurlpetsample" />
+          <package value="com.company.petsample" />
         </packages>
       </persistence-unit>
     </persistence-units>
