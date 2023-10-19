@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -29,8 +30,8 @@ public class MinioStorage {
         this.minioProperties = minioProperties;
     }
 
-    public String getPreSignedUploadUrl(String objectKey,
-                                        String contentType, Duration duration) {
+    public URL getPreSignedUploadUrl(String objectKey,
+                                     String contentType, Duration duration) {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(minioProperties.getDefaultBucket())
                 .key(objectKey)
@@ -42,10 +43,10 @@ public class MinioStorage {
                 .putObjectRequest(objectRequest)
                 .build();
         PresignedPutObjectRequest preSignedRequest = s3Presigner.presignPutObject(preSignRequest);
-        return preSignedRequest.url().toString();
+        return preSignedRequest.url();
     }
 
-    public String getPreSignedDownloadUrl(String objectKey, Duration duration) {
+    public URL getPreSignedDownloadUrl(String objectKey, Duration duration) {
         Objects.requireNonNull(objectKey, "object key not specified");
 
         GetObjectRequest objectRequest = GetObjectRequest.builder()
@@ -59,7 +60,7 @@ public class MinioStorage {
 
         PresignedGetObjectRequest preSignedRequest = s3Presigner.presignGetObject(preSignRequest);
 
-        return preSignedRequest.url().toString();
+        return preSignedRequest.url();
     }
 
     public void delete(String objectKey) {

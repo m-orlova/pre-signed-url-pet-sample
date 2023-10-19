@@ -58,7 +58,7 @@ type Query {
     userPermissions: [String] # a system query to security roles for an authenticated user
     pet(id: ID!): Pet!
     petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
-    petPassportDownloadUrl(id: ID!): String!
+    petPassportDownloadUrl(id: ID!): Url!
     petPassportUploadUrl(originalFilename: String!, contentType: String): FileUploadResponse!
 }
 
@@ -88,7 +88,7 @@ type PetResultPage {
 
 type FileUploadResponse {
     objectKey: String!
-    uploadUrl: String!
+    uploadUrl: Url!
 }
 
 enum SortDirection {

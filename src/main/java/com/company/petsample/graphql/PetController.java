@@ -18,6 +18,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -83,13 +84,13 @@ public class PetController {
     @NonNull
     public FileUploadResponse getPassportUploadUrl(@Argument @NonNull String originalFilename, @Argument String contentType) {
         String objectKey = System.currentTimeMillis() + "_" + originalFilename;
-        String uploadUrl = minioStorage.getPreSignedUploadUrl(objectKey, contentType, Duration.ofMinutes(10));
+        URL uploadUrl = minioStorage.getPreSignedUploadUrl(objectKey, contentType, Duration.ofMinutes(10));
         return new FileUploadResponse(objectKey, uploadUrl);
     }
 
     @QueryMapping(name = "petPassportDownloadUrl")
     @NonNull
-    public String getPassportDownloadUrl(@GraphQLId @NonNull @Argument Long id) {
+    public URL getPassportDownloadUrl(@GraphQLId @NonNull @Argument Long id) {
         Pet pet = crudRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entity not found by id: " + id));
 

@@ -34,7 +34,7 @@ export type Scalars = {
 export type FileUploadResponse = {
   __typename?: "FileUploadResponse";
   objectKey: Scalars["String"];
-  uploadUrl: Scalars["String"];
+  uploadUrl: Scalars["Url"];
 };
 
 export type Mutation = {
@@ -92,7 +92,7 @@ export type Query = {
   checkAuthenticated?: Maybe<Scalars["Void"]>;
   pet: Pet;
   petList: PetResultPage;
-  petPassportDownloadUrl: Scalars["String"];
+  petPassportDownloadUrl: Scalars["Url"];
   petPassportUploadUrl: FileUploadResponse;
   userInfo?: Maybe<UserInfo>;
   userPermissions?: Maybe<Array<Maybe<Scalars["String"]>>>;
@@ -153,7 +153,7 @@ export type PetPassportUploadUrlQuery = {
   petPassportUploadUrl: {
     __typename?: "FileUploadResponse";
     objectKey: string;
-    uploadUrl: string;
+    uploadUrl: any;
   };
 };
 
@@ -182,7 +182,7 @@ export type TemplateFileUploadUrlQuery = {
   petPassportUploadUrl: {
     __typename?: "FileUploadResponse";
     objectKey: string;
-    uploadUrl: string;
+    uploadUrl: any;
   };
 };
 
@@ -192,7 +192,7 @@ export type TemplateFileDownloadUrlQueryVariables = Exact<{
 
 export type TemplateFileDownloadUrlQuery = {
   __typename?: "Query";
-  petPassportDownloadUrl: string;
+  petPassportDownloadUrl: any;
 };
 
 export type PetListQueryVariables = Exact<{
@@ -232,7 +232,7 @@ export type PetPassportDownloadUrlQueryVariables = Exact<{
 
 export type PetPassportDownloadUrlQuery = {
   __typename?: "Query";
-  petPassportDownloadUrl: string;
+  petPassportDownloadUrl: any;
 };
 
 export type UserInfoQueryVariables = Exact<{ [key: string]: never }>;
