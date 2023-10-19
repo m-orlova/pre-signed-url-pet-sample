@@ -1,10 +1,12 @@
-package com.company.presignedurlpetsample.graphql;
+package com.company.petsample.graphql;
 
 import com.amplicode.core.graphql.annotation.GraphQLId;
 import com.amplicode.core.graphql.paging.OffsetPageInput;
 import com.amplicode.core.graphql.paging.ResultPage;
-import com.company.presignedurlpetsample.entity.Pet;
-import com.company.presignedurlpetsample.repository.PetRepository;
+import com.company.petsample.dto.FileUploadResponse;
+import com.company.petsample.entity.Pet;
+import com.company.petsample.minio.MinioStorage;
+import com.company.petsample.repository.PetRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,9 +27,12 @@ import java.util.stream.Collectors;
 @Controller
 public class PetController {
     private final PetRepository crudRepository;
+    private final MinioStorage minioStorage;
 
-    public PetController(PetRepository crudRepository) {
+    public PetController(PetRepository crudRepository,
+                         MinioStorage minioStorage) {
         this.crudRepository = crudRepository;
+        this.minioStorage = minioStorage;
     }
 
     @MutationMapping(name = "deletePet")
@@ -36,6 +42,9 @@ public class PetController {
                 .orElseThrow(() -> new RuntimeException(String.format("Unable to find entity by id: %s ", id)));
 
         crudRepository.delete(entity);
+        if (entity.getPassport() != null) {
+            minioStorage.delete(entity.getPassport());
+        }
     }
 
     @QueryMapping(name = "petList")
@@ -68,6 +77,23 @@ public class PetController {
             }
         }
         return crudRepository.save(input);
+    }
+
+    @QueryMapping(name = "petPassportUploadUrl")
+    @NonNull
+    public FileUploadResponse getPassportUploadUrl(@Argument @NonNull String originalFilename, @Argument String contentType) {
+        String objectKey = System.currentTimeMillis() + "_" + originalFilename;
+        String uploadUrl = minioStorage.getPreSignedUploadUrl(objectKey, contentType, Duration.ofMinutes(10));
+        return new FileUploadResponse(objectKey, uploadUrl);
+    }
+
+    @QueryMapping(name = "petPassportDownloadUrl")
+    @NonNull
+    public String getPassportDownloadUrl(@GraphQLId @NonNull @Argument Long id) {
+        Pet pet = crudRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Entity not found by id: " + id));
+
+        return minioStorage.getPreSignedDownloadUrl(pet.getPassport(), Duration.ofMinutes(10));
     }
 
     protected Sort createSort(List<PetOrderByInput> sortInput) {

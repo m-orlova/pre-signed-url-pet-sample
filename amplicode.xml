@@ -35,13 +35,4 @@
       <scalar-type name="Void" javaType="java.lang.Void" assignExpr="com.amplicode.core.graphql.scalars.VoidScalar#INSTANCE" />
     </scalar-types>
   </component>
-  <component name="PersistenceUnitSettings">
-    <persistence-units>
-      <persistence-unit name="Default" defaultIncludeChangeLogFile="src/main/resources/db/changelog.xml">
-        <packages>
-          <package value="com.company.petsample" />
-        </packages>
-      </persistence-unit>
-    </persistence-units>
-  </component>
 </project>

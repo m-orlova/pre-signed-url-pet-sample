@@ -16,7 +16,11 @@ const messages: TranslationMessages = {
       }
     }
   },
-
+  file: {
+    downloadFail: "Unable to download file: %{filename}",
+    uploadFail: "Unable to upload file: %{errorText}",
+    download: "Download"
+  },
   amplicode: {
     not_set: "Not set"
   }

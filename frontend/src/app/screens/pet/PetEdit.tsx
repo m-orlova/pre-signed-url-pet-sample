@@ -1,9 +1,24 @@
-import { gql } from "@amplicode/gql";
-import { ResultOf } from "@graphql-typed-document-node/core";
-import { useCallback } from "react";
-import { Edit, SimpleForm, TextInput, useNotify, useRedirect, useUpdate } from "react-admin";
-import { FieldValues, SubmitHandler } from "react-hook-form";
-import { checkServerValidationErrors } from "../../../core/error/checkServerValidationError";
+import {gql} from "@amplicode/gql";
+import {ResultOf} from "@graphql-typed-document-node/core";
+import {useCallback} from "react";
+import {
+  Edit,
+  FileField,
+  FileInput,
+  FunctionField,
+  SimpleForm,
+  TextInput,
+  useNotify,
+  useRedirect,
+  useUpdate,
+  WithRecord
+} from "react-admin";
+import {FieldValues, SubmitHandler} from "react-hook-form";
+import {checkServerValidationErrors} from "../../../core/error/checkServerValidationError";
+import {ExternalFileField} from "../../component/ExternalFileField";
+import {fileProvider} from "../../../core/file/fileProvider";
+import {isNewFile} from "../../../core/file/isNewFile";
+import axios from "axios";
 
 const PET = gql(`query Pet($id: ID!) {
   pet(id: $id) {
@@ -22,6 +37,17 @@ const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
   }
 }`);
 
+const PET_PASSPORT_UPLOAD_URL = gql(`query TemplateFileUploadUrl($contentType: String, $originalFilename: String!) {
+ petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {
+  objectKey
+  uploadUrl
+  }
+}`);
+
+const PET_PASSPORT_DOWNLOAD_URL = gql(`query TemplateFileDownloadUrl($id: ID!) {
+  petPassportDownloadUrl(id: $id) 
+}`);
+
 export const PetEdit = () => {
   const queryOptions = {
     meta: {
@@ -37,16 +63,47 @@ export const PetEdit = () => {
   const save: SubmitHandler<FieldValues> = useCallback(
     async (data: FieldValues) => {
       try {
-        const params = { data, meta: { mutation: UPDATE_PET } };
-        const options = { returnPromise: true };
+        const passport = data.passport;
+        if (isNewFile(passport)) {
+          //initialize data required to get a pre-signed URL for file upload
+          const meta = {
+            query: PET_PASSPORT_UPLOAD_URL,
+            variables: {
+              contentType: passport.rawFile.type,
+              originalFilename: passport.title
+            }
+          };
+
+          //get a pre-signed URL for file upload
+          const fileUploadResponse = await fileProvider.getPreSignedUrl(meta);
+          const uploadUrl = fileUploadResponse.uploadUrl;
+
+          //upload file via pre-signed URL
+          await fileProvider.upload(uploadUrl, passport);
+
+          //set file-related properties
+          data.passport = fileUploadResponse.objectKey;
+        }
+
+        const params = {data, meta: {mutation: UPDATE_PET}};
+        const options = {returnPromise: true};
 
         await update("Pet", params, options);
 
-        notify("ra.notification.updated", { messageArgs: { smart_count: 1 } });
+        notify("ra.notification.updated", {messageArgs: {smart_count: 1}});
         redirect("list", "Pet");
       } catch (response: any) {
         console.log("update failed with error", response);
-        return checkServerValidationErrors(response, notify);
+        if (axios.isAxiosError(response) || response.message) {
+          notify("file.uploadFail", {
+            type: "error",
+            messageArgs: {
+              errorText: response.message
+            }
+          })
+        } else {
+          return checkServerValidationErrors(response, notify);
+        }
       }
     },
     [update, notify, redirect]
@@ -55,9 +112,23 @@ export const PetEdit = () => {
   return (
     <Edit<ItemType> mutationMode="pessimistic" queryOptions={queryOptions}>
       <SimpleForm onSubmit={save}>
-        <TextInput source="identifier" />
-        <TextInput source="name" />
-        <TextInput source="passport" />
+        <TextInput source="identifier"/>
+        <TextInput source="name"/>
+        <WithRecord render={record =>
+          <FileInput source="passport"
+                     maxSize={50000000} //set max file size (in bytes), e.g. 5000000 equals to 5MB
+                     accept="application/pdf" //set allowed content types, e.g. "application/pdf", "text/*", ["text/plain", "application/pdf"]
+                     multiple={false}>
+            <FunctionField render={fileRecord => isNewFile(fileRecord) ?
+              <FileField source="src" title="title" download={fileRecord.title}/> :
+              <ExternalFileField filename="passport.pdf" downloadFileMeta={{
+                query: PET_PASSPORT_DOWNLOAD_URL,
+                variables: {
+                  id: record.id
+                }
+              }}/>}/>
+          </FileInput>
+        }/>
       </SimpleForm>
     </Edit>
   );

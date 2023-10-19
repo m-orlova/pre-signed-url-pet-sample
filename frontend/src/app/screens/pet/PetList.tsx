@@ -1,6 +1,7 @@
-import { gql } from "@amplicode/gql";
-import { ResultOf } from "@graphql-typed-document-node/core";
-import { Datagrid, DeleteButton, EditButton, List, TextField } from "react-admin";
+import {gql} from "@amplicode/gql";
+import {ResultOf} from "@graphql-typed-document-node/core";
+import {Datagrid, DeleteButton, EditButton, FunctionField, List, TextField} from "react-admin";
+import {ExternalFileField} from "../../component/ExternalFileField";
 
 const PET_LIST = gql(`query PetList(
   $sort: [PetOrderByInput]
@@ -24,6 +25,11 @@ const DELETE_PET = gql(`mutation DeletePet($id: ID!) {
   deletePet(id: $id) 
 }`);
 
+const PET_PASSPORT_DOWNLOAD_URL = gql(`query PetPassportDownloadUrl($id: ID!) {
+  petPassportDownloadUrl(id: $id) 
+}`);
+
+
 export const PetList = () => {
   const queryOptions = {
     meta: {
@@ -36,16 +42,21 @@ export const PetList = () => {
   return (
     <List<ItemType> queryOptions={queryOptions} exporter={false}>
       <Datagrid rowClick="show" bulkActionButtons={false}>
-        <TextField source="id" sortable={false} />
-
-        <TextField source="identifier" />
-        <TextField source="name" />
-        <TextField source="passport" sortable={false} />
-
-        <EditButton />
+        <TextField source="identifier"/>
+        <TextField source="name"/>
+        <FunctionField source="passport"
+                       sortable={false}
+                       render={record => record.passport ?
+                         <ExternalFileField label="file.download" //set label for link button, can be omitted
+                                            filename="passport.pdf" //set downloaded file name
+                                            downloadFileMeta={{
+                                              query: PET_PASSPORT_DOWNLOAD_URL,
+                                              variables: {id: record.id}
+                                            }}/> : null}/>
+        <EditButton/>
         <DeleteButton
           mutationMode="pessimistic"
-          mutationOptions={{ meta: { mutation: DELETE_PET } }}
+          mutationOptions={{meta: {mutation: DELETE_PET}}}
         />
       </Datagrid>
     </List>

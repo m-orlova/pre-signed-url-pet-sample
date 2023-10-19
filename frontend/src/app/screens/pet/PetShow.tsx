@@ -1,6 +1,7 @@
-import { gql } from "@amplicode/gql";
-import { ResultOf } from "@graphql-typed-document-node/core";
-import { Show, SimpleShowLayout, TextField } from "react-admin";
+import {gql} from "@amplicode/gql";
+import {ResultOf} from "@graphql-typed-document-node/core";
+import {FunctionField, Show, SimpleShowLayout, TextField} from "react-admin";
+import {ExternalFileField} from "../../component/ExternalFileField";
 
 const PET = gql(`query Pet($id: ID!) {
   pet(id: $id) {
@@ -9,6 +10,10 @@ const PET = gql(`query Pet($id: ID!) {
     name
     passport
   }
+}`);
+
+const PET_PASSPORT_DOWNLOAD_URL = gql(`query PetPassportDownloadUrl($id: ID!) {
+  petPassportDownloadUrl(id: $id) 
 }`);
 
 export const PetShow = () => {
@@ -22,11 +27,15 @@ export const PetShow = () => {
   return (
     <Show<ItemType> queryOptions={queryOptions}>
       <SimpleShowLayout>
-        <TextField source="id" />
-
-        <TextField source="identifier" />
-        <TextField source="name" />
-        <TextField source="passport" />
+        <TextField source="identifier"/>
+        <TextField source="name"/>
+        <FunctionField source="passport"
+                       sortable={false}
+                       render={record => record.passport ? <ExternalFileField filename="passport.pdf"
+                                                                              downloadFileMeta={{
+                                                                                query: PET_PASSPORT_DOWNLOAD_URL,
+                                                                                variables: {id: record.id}
+                                                                              }}/> : null}/>
       </SimpleShowLayout>
     </Show>
   );

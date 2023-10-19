@@ -31,6 +31,12 @@ export type Scalars = {
   Void: any;
 };
 
+export type FileUploadResponse = {
+  __typename?: "FileUploadResponse";
+  objectKey: Scalars["String"];
+  uploadUrl: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   deletePet?: Maybe<Scalars["Void"]>;
@@ -86,6 +92,8 @@ export type Query = {
   checkAuthenticated?: Maybe<Scalars["Void"]>;
   pet: Pet;
   petList: PetResultPage;
+  petPassportDownloadUrl: Scalars["String"];
+  petPassportUploadUrl: FileUploadResponse;
   userInfo?: Maybe<UserInfo>;
   userPermissions?: Maybe<Array<Maybe<Scalars["String"]>>>;
 };
@@ -97,6 +105,15 @@ export type QueryPetArgs = {
 export type QueryPetListArgs = {
   page?: InputMaybe<OffsetPageInput>;
   sort?: InputMaybe<Array<InputMaybe<PetOrderByInput>>>;
+};
+
+export type QueryPetPassportDownloadUrlArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryPetPassportUploadUrlArgs = {
+  contentType?: InputMaybe<Scalars["String"]>;
+  originalFilename: Scalars["String"];
 };
 
 export enum SortDirection {
@@ -126,6 +143,20 @@ export type UpdatePetMutation = {
   };
 };
 
+export type PetPassportUploadUrlQueryVariables = Exact<{
+  contentType?: InputMaybe<Scalars["String"]>;
+  originalFilename: Scalars["String"];
+}>;
+
+export type PetPassportUploadUrlQuery = {
+  __typename?: "Query";
+  petPassportUploadUrl: {
+    __typename?: "FileUploadResponse";
+    objectKey: string;
+    uploadUrl: string;
+  };
+};
+
 export type PetQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
@@ -139,6 +170,29 @@ export type PetQuery = {
     name?: string | null;
     passport?: string | null;
   };
+};
+
+export type TemplateFileUploadUrlQueryVariables = Exact<{
+  contentType?: InputMaybe<Scalars["String"]>;
+  originalFilename: Scalars["String"];
+}>;
+
+export type TemplateFileUploadUrlQuery = {
+  __typename?: "Query";
+  petPassportUploadUrl: {
+    __typename?: "FileUploadResponse";
+    objectKey: string;
+    uploadUrl: string;
+  };
+};
+
+export type TemplateFileDownloadUrlQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type TemplateFileDownloadUrlQuery = {
+  __typename?: "Query";
+  petPassportDownloadUrl: string;
 };
 
 export type PetListQueryVariables = Exact<{
@@ -170,6 +224,15 @@ export type DeletePetMutationVariables = Exact<{
 export type DeletePetMutation = {
   __typename?: "Mutation";
   deletePet?: any | null;
+};
+
+export type PetPassportDownloadUrlQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type PetPassportDownloadUrlQuery = {
+  __typename?: "Query";
+  petPassportDownloadUrl: string;
 };
 
 export type UserInfoQueryVariables = Exact<{ [key: string]: never }>;
@@ -252,6 +315,77 @@ export const UpdatePetDocument = {
     },
   ],
 } as unknown as DocumentNode<UpdatePetMutation, UpdatePetMutationVariables>;
+export const PetPassportUploadUrlDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "PetPassportUploadUrl" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "contentType" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "originalFilename" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "petPassportUploadUrl" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "contentType" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "contentType" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "originalFilename" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "originalFilename" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "objectKey" } },
+                { kind: "Field", name: { kind: "Name", value: "uploadUrl" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PetPassportUploadUrlQuery,
+  PetPassportUploadUrlQueryVariables
+>;
 export const PetDocument = {
   kind: "Document",
   definitions: [
@@ -300,6 +434,119 @@ export const PetDocument = {
     },
   ],
 } as unknown as DocumentNode<PetQuery, PetQueryVariables>;
+export const TemplateFileUploadUrlDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TemplateFileUploadUrl" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "contentType" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "originalFilename" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "petPassportUploadUrl" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "contentType" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "contentType" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "originalFilename" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "originalFilename" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "objectKey" } },
+                { kind: "Field", name: { kind: "Name", value: "uploadUrl" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TemplateFileUploadUrlQuery,
+  TemplateFileUploadUrlQueryVariables
+>;
+export const TemplateFileDownloadUrlDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TemplateFileDownloadUrl" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "petPassportDownloadUrl" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TemplateFileDownloadUrlQuery,
+  TemplateFileDownloadUrlQueryVariables
+>;
 export const PetListDocument = {
   kind: "Document",
   definitions: [
@@ -425,6 +672,48 @@ export const DeletePetDocument = {
     },
   ],
 } as unknown as DocumentNode<DeletePetMutation, DeletePetMutationVariables>;
+export const PetPassportDownloadUrlDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "PetPassportDownloadUrl" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "petPassportDownloadUrl" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PetPassportDownloadUrlQuery,
+  PetPassportDownloadUrlQueryVariables
+>;
 export const UserInfoDocument = {
   kind: "Document",
   definitions: [

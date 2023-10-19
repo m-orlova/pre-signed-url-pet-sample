@@ -52,6 +52,8 @@ type Query {
   checkAuthenticated: Void
   pet(id: ID!): Pet!
   petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
+  petPassportDownloadUrl(id: ID!): String!
+  petPassportUploadUrl(originalFilename: String!, contentType: String): FileUploadResponse!
   userInfo: UserInfo
   userPermissions: [String]
 }
@@ -59,6 +61,11 @@ type Query {
 type Mutation {
   deletePet(id: ID!): Void
   updatePet(input: PetInput!): Pet!
+}
+
+type FileUploadResponse {
+  objectKey: String!
+  uploadUrl: String!
 }
 
 type Pet {

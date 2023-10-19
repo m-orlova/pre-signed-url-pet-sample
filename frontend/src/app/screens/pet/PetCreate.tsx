@@ -1,9 +1,12 @@
-import { gql } from "@amplicode/gql";
-import { ResultOf } from "@graphql-typed-document-node/core";
-import { useCallback } from "react";
-import { Create, SimpleForm, TextInput, useCreate, useNotify, useRedirect } from "react-admin";
-import { FieldValues, SubmitHandler } from "react-hook-form";
-import { checkServerValidationErrors } from "../../../core/error/checkServerValidationError";
+import {gql} from "@amplicode/gql";
+import {ResultOf} from "@graphql-typed-document-node/core";
+import React, {useCallback} from "react";
+import {Create, FileField, FileInput, SimpleForm, TextInput, useCreate, useNotify, useRedirect} from "react-admin";
+import {FieldValues, SubmitHandler} from "react-hook-form";
+import {checkServerValidationErrors} from "../../../core/error/checkServerValidationError";
+import {fileProvider} from "../../../core/file/fileProvider";
+import {isNewFile} from "../../../core/file/isNewFile";
+import axios from "axios";
 
 const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
   updatePet(input: $input) {
@@ -11,6 +14,13 @@ const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
     identifier
     name
     passport
+  }
+}`);
+
+const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {
+  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {
+  objectKey
+  uploadUrl
   }
 }`);
 
@@ -22,16 +32,47 @@ export const PetCreate = () => {
   const save: SubmitHandler<FieldValues> = useCallback(
     async (data: FieldValues) => {
       try {
-        const params = { data, meta: { mutation: UPDATE_PET } };
-        const options = { returnPromise: true };
+        const passport = data.passport;
+        if (isNewFile(passport)) {
+          //initialize data required to get a pre-signed URL for file upload
+          const meta = {
+            query: PET_PASSPORT_UPLOAD_URL,
+            variables: {
+              contentType: passport.rawFile.type,
+              originalFilename: passport.title
+            }
+          };
+
+          //get a pre-signed URL for file upload
+          const fileUploadResponse = await fileProvider.getPreSignedUrl(meta);
+          const uploadUrl = fileUploadResponse.uploadUrl;
+
+          //upload file via pre-signed URL
+          await fileProvider.upload(uploadUrl, passport);
+
+          //set file-related properties
+          data.passport = fileUploadResponse.objectKey
+        }
+
+        const params = {data, meta: {mutation: UPDATE_PET}};
+        const options = {returnPromise: true};
 
         await create("Pet", params, options);
 
-        notify("ra.notification.created", { messageArgs: { smart_count: 1 } });
+        notify("ra.notification.created", {messageArgs: {smart_count: 1}});
         redirect("list", "Pet");
       } catch (response: any) {
         console.log("create failed with error", response);
-        return checkServerValidationErrors(response, notify);
+        if (axios.isAxiosError(response) || response.message) {
+          notify("file.uploadFail", {
+            type: "error",
+            messageArgs: {
+              errorText: response.message
+            }
+          });
+        } else {
+          return checkServerValidationErrors(response, notify);
+        }
       }
     },
     [create, notify, redirect]
@@ -40,9 +81,14 @@ export const PetCreate = () => {
   return (
     <Create<ItemType> redirect="list">
       <SimpleForm onSubmit={save}>
-        <TextInput source="identifier" />
-        <TextInput source="name" />
-        <TextInput source="passport" />
+        <TextInput source="identifier"/>
+        <TextInput source="name"/>
+        <FileInput source="passport"
+                   maxSize={50000000} //set max file size (in bytes), e.g. 5000000 equals to 5MB
+                   accept="application/pdf" //set allowed content types, e.g. "application/pdf", "text/*", ["text/plain", "application/pdf"]
+                   multiple={false}>
+          <FileField source="src" title="title"/>
+        </FileInput>
       </SimpleForm>
     </Create>
   );
