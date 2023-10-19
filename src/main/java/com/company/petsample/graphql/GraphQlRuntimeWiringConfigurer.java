@@ -1,4 +1,4 @@
-package com.company.presignedurlpetsample.graphql;
+package com.company.petsample.graphql;
 
 import com.amplicode.core.graphql.scalars.*;
 import graphql.scalars.ExtendedScalars;
