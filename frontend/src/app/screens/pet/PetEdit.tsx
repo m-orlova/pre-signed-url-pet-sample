@@ -37,14 +37,14 @@ const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
   }
 }`);
 
-const PET_PASSPORT_UPLOAD_URL = gql(`query TemplateFileUploadUrl($contentType: String, $originalFilename: String!) {
+const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {
  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {
   objectKey
   uploadUrl
   }
 }`);
 
-const PET_PASSPORT_DOWNLOAD_URL = gql(`query TemplateFileDownloadUrl($id: ID!) {
+const PET_PASSPORT_DOWNLOAD_URL = gql(`query PetPassportDownloadUrl($id: ID!) {
   petPassportDownloadUrl(id: $id) 
 }`);
 
@@ -75,10 +75,10 @@ export const PetEdit = () => {
           };
 
           //get a pre-signed URL for file upload
-          const fileUploadResponse = await fileProvider.getPreSignedUrl(meta);
+          const fileUploadResponse = await fileProvider.getPreSignedUploadUrl(meta);
           const uploadUrl = fileUploadResponse.uploadUrl;
 
-          //upload file via pre-signed URL
+          //upload file using pre-signed URL
           await fileProvider.upload(uploadUrl, passport);
 
           //set file-related properties
@@ -116,7 +116,7 @@ export const PetEdit = () => {
         <TextInput source="name"/>
         <WithRecord render={record =>
           <FileInput source="passport"
-                     maxSize={50000000} //set max file size (in bytes), e.g. 5000000 equals to 5MB
+                     maxSize={50_000_000} //set max file size (in bytes), e.g. 5_000_000 equals to 5MB
                      accept="application/pdf" //set allowed content types, e.g. "application/pdf", "text/*", ["text/plain", "application/pdf"]
                      multiple={false}>
             <FunctionField render={fileRecord => isNewFile(fileRecord) ?

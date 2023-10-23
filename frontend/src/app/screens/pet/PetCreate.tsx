@@ -1,7 +1,17 @@
 import {gql} from "@amplicode/gql";
 import {ResultOf} from "@graphql-typed-document-node/core";
 import React, {useCallback} from "react";
-import {Create, FileField, FileInput, SimpleForm, TextInput, useCreate, useNotify, useRedirect} from "react-admin";
+import {
+  Create,
+  FileField,
+  FileInput,
+  FunctionField,
+  SimpleForm,
+  TextInput,
+  useCreate,
+  useNotify,
+  useRedirect
+} from "react-admin";
 import {FieldValues, SubmitHandler} from "react-hook-form";
 import {checkServerValidationErrors} from "../../../core/error/checkServerValidationError";
 import {fileProvider} from "../../../core/file/fileProvider";
@@ -44,10 +54,10 @@ export const PetCreate = () => {
           };
 
           //get a pre-signed URL for file upload
-          const fileUploadResponse = await fileProvider.getPreSignedUrl(meta);
+          const fileUploadResponse = await fileProvider.getPreSignedUploadUrl(meta);
           const uploadUrl = fileUploadResponse.uploadUrl;
 
-          //upload file via pre-signed URL
+          //upload file using pre-signed URL
           await fileProvider.upload(uploadUrl, passport);
 
           //set file-related properties
@@ -84,10 +94,10 @@ export const PetCreate = () => {
         <TextInput source="identifier"/>
         <TextInput source="name"/>
         <FileInput source="passport"
-                   maxSize={50000000} //set max file size (in bytes), e.g. 5000000 equals to 5MB
+                   maxSize={50_000_000} //set max file size (in bytes), e.g. 5_000_000 equals to 5MB
                    accept="application/pdf" //set allowed content types, e.g. "application/pdf", "text/*", ["text/plain", "application/pdf"]
                    multiple={false}>
-          <FileField source="src" title="title"/>
+          <FunctionField render={record => <FileField source="src" title="title" download={record.title}/>}/>
         </FileInput>
       </SimpleForm>
     </Create>

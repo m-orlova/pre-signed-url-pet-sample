@@ -172,25 +172,11 @@ export type PetQuery = {
   };
 };
 
-export type TemplateFileUploadUrlQueryVariables = Exact<{
-  contentType?: InputMaybe<Scalars["String"]>;
-  originalFilename: Scalars["String"];
-}>;
-
-export type TemplateFileUploadUrlQuery = {
-  __typename?: "Query";
-  petPassportUploadUrl: {
-    __typename?: "FileUploadResponse";
-    objectKey: string;
-    uploadUrl: any;
-  };
-};
-
-export type TemplateFileDownloadUrlQueryVariables = Exact<{
+export type PetPassportDownloadUrlQueryVariables = Exact<{
   id: Scalars["ID"];
 }>;
 
-export type TemplateFileDownloadUrlQuery = {
+export type PetPassportDownloadUrlQuery = {
   __typename?: "Query";
   petPassportDownloadUrl: any;
 };
@@ -224,15 +210,6 @@ export type DeletePetMutationVariables = Exact<{
 export type DeletePetMutation = {
   __typename?: "Mutation";
   deletePet?: any | null;
-};
-
-export type PetPassportDownloadUrlQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type PetPassportDownloadUrlQuery = {
-  __typename?: "Query";
-  petPassportDownloadUrl: any;
 };
 
 export type UserInfoQueryVariables = Exact<{ [key: string]: never }>;
@@ -434,84 +411,13 @@ export const PetDocument = {
     },
   ],
 } as unknown as DocumentNode<PetQuery, PetQueryVariables>;
-export const TemplateFileUploadUrlDocument = {
+export const PetPassportDownloadUrlDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "TemplateFileUploadUrl" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "contentType" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "originalFilename" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "petPassportUploadUrl" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "contentType" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "contentType" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "originalFilename" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "originalFilename" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "objectKey" } },
-                { kind: "Field", name: { kind: "Name", value: "uploadUrl" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TemplateFileUploadUrlQuery,
-  TemplateFileUploadUrlQueryVariables
->;
-export const TemplateFileDownloadUrlDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "TemplateFileDownloadUrl" },
+      name: { kind: "Name", value: "PetPassportDownloadUrl" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -544,8 +450,8 @@ export const TemplateFileDownloadUrlDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  TemplateFileDownloadUrlQuery,
-  TemplateFileDownloadUrlQueryVariables
+  PetPassportDownloadUrlQuery,
+  PetPassportDownloadUrlQueryVariables
 >;
 export const PetListDocument = {
   kind: "Document",
@@ -672,48 +578,6 @@ export const DeletePetDocument = {
     },
   ],
 } as unknown as DocumentNode<DeletePetMutation, DeletePetMutationVariables>;
-export const PetPassportDownloadUrlDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "PetPassportDownloadUrl" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
-          type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "petPassportDownloadUrl" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  PetPassportDownloadUrlQuery,
-  PetPassportDownloadUrlQueryVariables
->;
 export const UserInfoDocument = {
   kind: "Document",
   definitions: [

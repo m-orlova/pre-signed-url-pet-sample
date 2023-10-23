@@ -7,8 +7,8 @@ export interface NewFile {
 }
 
 export interface FileProvider {
-  getPreSignedUrl: (meta: GetPreSignedUrlMeta) => Promise<FileUploadResponse>
-  download: (meta: GetPreSignedUrlMeta | any | string, filename: string) => Promise<void>
+  getPreSignedUploadUrl: (meta: GetPreSignedUrlMeta) => Promise<FileUploadResponse>
+  download: (meta: GetPreSignedUrlMeta, filename: string) => Promise<void>
   upload: (url: string, file: NewFile) => Promise<any>
 }
 

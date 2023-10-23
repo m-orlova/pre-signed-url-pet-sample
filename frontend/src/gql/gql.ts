@@ -19,16 +19,14 @@ const documents = {
     types.PetPassportUploadUrlDocument,
   "query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n  }\n}":
     types.PetDocument,
-  "query TemplateFileUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}":
-    types.TemplateFileUploadUrlDocument,
-  "query TemplateFileDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}":
-    types.TemplateFileDownloadUrlDocument,
+  "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}":
+    types.PetPassportUploadUrlDocument,
+  "query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}":
+    types.PetPassportDownloadUrlDocument,
   "query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n    }\n    totalElements\n  }\n}":
     types.PetListDocument,
   "mutation DeletePet($id: ID!) {\n  deletePet(id: $id) \n}":
     types.DeletePetDocument,
-  "query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}":
-    types.PetPassportDownloadUrlDocument,
   "\n  query userInfo {\n   userInfo {\n     id\n     fullName\n     avatar\n   }\n  }\n":
     types.UserInfoDocument,
   "\n query checkAuthenticated {\n   checkAuthenticated\n }\n":
@@ -73,14 +71,14 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query TemplateFileUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"
-): (typeof documents)["query TemplateFileUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"];
+  source: "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"
+): (typeof documents)["query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query TemplateFileDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"
-): (typeof documents)["query TemplateFileDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"];
+  source: "query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"
+): (typeof documents)["query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -93,12 +91,6 @@ export function gql(
 export function gql(
   source: "mutation DeletePet($id: ID!) {\n  deletePet(id: $id) \n}"
 ): (typeof documents)["mutation DeletePet($id: ID!) {\n  deletePet(id: $id) \n}"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(
-  source: "query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"
-): (typeof documents)["query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

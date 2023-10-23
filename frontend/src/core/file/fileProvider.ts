@@ -3,7 +3,7 @@ import {apolloClient} from "../apollo/client";
 import axios from "axios";
 
 export const fileProvider: FileProvider = {
-  getPreSignedUrl: async (meta) => {
+  getPreSignedUploadUrl: async (meta) => {
     if (!meta.query) {
       throw new Error("Unable to get pre-signed URL");
     }
