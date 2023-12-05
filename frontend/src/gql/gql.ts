@@ -13,17 +13,17 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-  "mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n  }\n}":
+  "mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}":
     types.UpdatePetDocument,
-  "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}":
+  "query PetPassportUploadUrl($originalFilename: String!) {\n  petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}":
     types.PetPassportUploadUrlDocument,
-  "query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n  }\n}":
+  "query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}":
     types.PetDocument,
-  "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}":
+  "query PetPassportUploadUrl($originalFilename: String!) {\n petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}":
     types.PetPassportUploadUrlDocument,
   "query PetPassportDownloadUrl($id: ID!) {\n  petPassportDownloadUrl(id: $id) \n}":
     types.PetPassportDownloadUrlDocument,
-  "query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n    }\n    totalElements\n  }\n}":
+  "query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n      passportFilename\n    }\n    totalElements\n  }\n}":
     types.PetListDocument,
   "mutation DeletePet($id: ID!) {\n  deletePet(id: $id) \n}":
     types.DeletePetDocument,
@@ -53,26 +53,26 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n  }\n}"
-): (typeof documents)["mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n  }\n}"];
+  source: "mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}"
+): (typeof documents)["mutation UpdatePet($input: PetInput!) {\n  updatePet(input: $input) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"
-): (typeof documents)["query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"];
+  source: "query PetPassportUploadUrl($originalFilename: String!) {\n  petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}"
+): (typeof documents)["query PetPassportUploadUrl($originalFilename: String!) {\n  petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n  }\n}"
-): (typeof documents)["query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n  }\n}"];
+  source: "query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}"
+): (typeof documents)["query Pet($id: ID!) {\n  pet(id: $id) {\n    id\n    identifier\n    name\n    passport\n    passportFilename\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"
-): (typeof documents)["query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {\n petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {\n  objectKey\n  uploadUrl\n  }\n}"];
+  source: "query PetPassportUploadUrl($originalFilename: String!) {\n petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}"
+): (typeof documents)["query PetPassportUploadUrl($originalFilename: String!) {\n petPassportUploadUrl(originalFilename: $originalFilename) {\n  fileId\n  uploadUrl\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -83,8 +83,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: "query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n    }\n    totalElements\n  }\n}"
-): (typeof documents)["query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n    }\n    totalElements\n  }\n}"];
+  source: "query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n      passportFilename\n    }\n    totalElements\n  }\n}"
+): (typeof documents)["query PetList(\n  $sort: [PetOrderByInput]\n  $page: OffsetPageInput\n) {\n  petList(\n    sort: $sort\n    page: $page\n  ) {\n    content {\n      id\n      identifier\n      name\n      passport\n      passportFilename\n    }\n    totalElements\n  }\n}"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

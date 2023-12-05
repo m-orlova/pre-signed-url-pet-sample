@@ -1,6 +1,6 @@
 import {gql} from "@amplicode/gql";
 import {ResultOf} from "@graphql-typed-document-node/core";
-import {FunctionField, Show, SimpleShowLayout, TextField} from "react-admin";
+import {FunctionField, Show, SimpleShowLayout, TextField, useRecordContext} from "react-admin";
 import {ExternalFileField} from "../../component/ExternalFileField";
 
 const PET = gql(`query Pet($id: ID!) {
@@ -9,12 +9,20 @@ const PET = gql(`query Pet($id: ID!) {
     identifier
     name
     passport
+    passportFilename
   }
 }`);
 
 const PET_PASSPORT_DOWNLOAD_URL = gql(`query PetPassportDownloadUrl($id: ID!) {
   petPassportDownloadUrl(id: $id) 
 }`);
+
+const getPetPassportDownloadUrlVariables = () => {
+  const record = useRecordContext();
+  return {
+    id: record.id
+  }
+};
 
 export const PetShow = () => {
   const queryOptions = {
@@ -29,13 +37,21 @@ export const PetShow = () => {
       <SimpleShowLayout>
         <TextField source="identifier"/>
         <TextField source="name"/>
-        <FunctionField source="passport"
-                       sortable={false}
-                       render={record => record.passport ? <ExternalFileField filename="passport.pdf"
-                                                                              downloadFileMeta={{
-                                                                                query: PET_PASSPORT_DOWNLOAD_URL,
-                                                                                variables: {id: record.id}
-                                                                              }}/> : null}/>
+
+        <FunctionField
+          source="passport"
+          sortable={false}
+          render={record => record.passport ? <ExternalFileField
+            // filename={"data.txt"} //TODO: initialize value
+            filename={record.passportFilename}
+            preSignedUrlQueryOptions={{
+              query: PET_PASSPORT_DOWNLOAD_URL,
+              variables: {
+                id: record.id
+              }
+            }}/> : null}/>
+
+       {/* <TextField source="passportFilename"/>*/}
       </SimpleShowLayout>
     </Show>
   );

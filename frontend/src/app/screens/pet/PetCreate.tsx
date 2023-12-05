@@ -14,9 +14,12 @@ import {
 } from "react-admin";
 import {FieldValues, SubmitHandler} from "react-hook-form";
 import {checkServerValidationErrors} from "../../../core/error/checkServerValidationError";
-import {fileProvider} from "../../../core/file/fileProvider";
 import {isNewFile} from "../../../core/file/isNewFile";
 import axios from "axios";
+import {apolloClient} from "../../../core/apollo/client";
+import {NewFile} from "../../../core/file/fileTypes";
+import {fileProvider} from "../../../core/file/fileProvider";
+import {TypedQueryDocumentNode} from "graphql/utilities";
 
 const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
   updatePet(input: $input) {
@@ -24,12 +27,13 @@ const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
     identifier
     name
     passport
+    passportFilename
   }
 }`);
 
-const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {
-  petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {
-  objectKey
+const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($originalFilename: String!) {
+  petPassportUploadUrl(originalFilename: $originalFilename) {
+  fileId
   uploadUrl
   }
 }`);
@@ -44,24 +48,26 @@ export const PetCreate = () => {
       try {
         const passport = data.passport;
         if (isNewFile(passport)) {
-          //initialize data required to get a pre-signed URL for file upload
-          const meta = {
-            query: PET_PASSPORT_UPLOAD_URL,
+          const {rawFile} = passport as NewFile;
+
+          //get a pre-signed URL and generated file id
+          const {fileId, uploadUrl} = await apolloClient.query({
+            query: PET_PASSPORT_UPLOAD_URL as TypedQueryDocumentNode,
             variables: {
-              contentType: passport.rawFile.type,
-              originalFilename: passport.title
+              // originalFilename: null //TODO: initialize value
+              originalFilename: rawFile.name
             }
-          };
+          }).then(value => {
+            return value.data.petPassportUploadUrl;
+          });
 
-          //get a pre-signed URL for file upload
-          const fileUploadResponse = await fileProvider.getPreSignedUploadUrl(meta);
-          const uploadUrl = fileUploadResponse.uploadUrl;
+          //upload a file
+          await fileProvider.upload(uploadUrl, rawFile);
 
-          //upload file using pre-signed URL
-          await fileProvider.upload(uploadUrl, passport);
+          data.passport = fileId;
 
-          //set file-related properties
-          data.passport = fileUploadResponse.objectKey
+          //TODO: set file-related fields like original filename, contentType
+          data.passportFilename = rawFile.name;
         }
 
         const params = {data, meta: {mutation: UPDATE_PET}};
@@ -99,6 +105,7 @@ export const PetCreate = () => {
                    multiple={false}>
           <FunctionField render={record => <FileField source="src" title="title" download={record.title}/>}/>
         </FileInput>
+        {/* <TextInput source="passportFilename"/>*/}
       </SimpleForm>
     </Create>
   );
@@ -110,6 +117,7 @@ const PET_TYPE = gql(`query Pet($id: ID!) {
     identifier
     name
     passport
+    passportFilename
   }
 }`);
 

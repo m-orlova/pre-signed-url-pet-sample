@@ -1,15 +1,15 @@
-import { DevSupport } from "@react-buddy/ide-toolbox";
-import { AdminContext, AdminUI, Loading, Resource } from "react-admin";
-import { useAuthProvider } from "../authProvider/useAuthProvider";
-import { getPetRecordRepresentation } from "../core/record-representation/getPetRecordRepresentation";
-import { dataProvider } from "../dataProvider/graphqlDataProvider";
-import { ComponentPreviews, useInitial } from "../dev";
-import { i18nProvider } from "../i18nProvider";
-import { AdminLayout } from "./AdminLayout";
-import { PetCreate } from "./screens/pet/PetCreate";
-import { PetEdit } from "./screens/pet/PetEdit";
-import { PetList } from "./screens/pet/PetList";
-import { PetShow } from "./screens/pet/PetShow";
+import {DevSupport} from "@react-buddy/ide-toolbox";
+import {AdminContext, AdminUI, Loading, Resource} from "react-admin";
+import {useAuthProvider} from "../authProvider/useAuthProvider";
+import {getPetRecordRepresentation} from "../core/record-representation/getPetRecordRepresentation";
+import {dataProvider} from "../dataProvider/graphqlDataProvider";
+import {ComponentPreviews, useInitial} from "../dev";
+import {i18nProvider} from "../i18nProvider";
+import {AdminLayout} from "./AdminLayout";
+import {PetCreate} from "./screens/pet/PetCreate";
+import {PetEdit} from "./screens/pet/PetEdit";
+import {PetList} from "./screens/pet/PetList";
+import {PetShow} from "./screens/pet/PetShow";
 
 export const App = () => {
   const { authProvider, loading } = useAuthProvider();

@@ -11,6 +11,8 @@ directive @digits(fraction: Int!, integer: Int!) on ARGUMENT_DEFINITION | INPUT_
 
 directive @email(regexp: String = ".*") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
+directive @fileId on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
 directive @future on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @futureOrPresent on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
@@ -49,23 +51,23 @@ directive @javaType(name: String!) on SCALAR | OBJECT | INPUT_OBJECT
 
 # Query root
 type Query {
-  checkAuthenticated: Void
-  pet(id: ID!): Pet!
-  petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
-  petPassportDownloadUrl(id: ID!): Url!
-  petPassportUploadUrl(originalFilename: String!, contentType: String): FileUploadResponse!
   userInfo: UserInfo
+  petPassportDownloadUrl(id: ID!): Url!
+  checkAuthenticated: Void
+  petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
   userPermissions: [String]
+  pet(id: ID!): Pet!
+  petPassportUploadUrl(originalFilename: String!): FileUploadResponse!
 }
 
 type Mutation {
-  deletePet(id: ID!): Void
   updatePet(input: PetInput!): Pet!
+  deletePet(id: ID!): Void
 }
 
 type FileUploadResponse {
-  objectKey: String!
   uploadUrl: Url!
+  fileId: String!
 }
 
 type Pet {
@@ -73,6 +75,7 @@ type Pet {
   identifier: String
   name: String
   passport: String
+  passportFilename: String
 }
 
 type PetResultPage {
@@ -82,9 +85,9 @@ type PetResultPage {
 
 # Contains information about user
 type UserInfo {
-  avatar: String
-  fullName: String
   id: String!
+  fullName: String
+  avatar: String
 }
 
 input OffsetPageInput {
@@ -97,6 +100,7 @@ input PetInput {
   identifier: String
   name: String
   passport: String
+  passportFilename: String
 }
 
 input PetOrderByInput {

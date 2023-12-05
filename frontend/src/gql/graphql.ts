@@ -33,7 +33,7 @@ export type Scalars = {
 
 export type FileUploadResponse = {
   __typename?: "FileUploadResponse";
-  objectKey: Scalars["String"];
+  fileId: Scalars["String"];
   uploadUrl: Scalars["Url"];
 };
 
@@ -62,6 +62,7 @@ export type Pet = {
   identifier?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   passport?: Maybe<Scalars["String"]>;
+  passportFilename?: Maybe<Scalars["String"]>;
 };
 
 export type PetInput = {
@@ -69,6 +70,7 @@ export type PetInput = {
   identifier?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
   passport?: InputMaybe<Scalars["String"]>;
+  passportFilename?: InputMaybe<Scalars["String"]>;
 };
 
 export type PetOrderByInput = {
@@ -112,7 +114,6 @@ export type QueryPetPassportDownloadUrlArgs = {
 };
 
 export type QueryPetPassportUploadUrlArgs = {
-  contentType?: InputMaybe<Scalars["String"]>;
   originalFilename: Scalars["String"];
 };
 
@@ -140,11 +141,11 @@ export type UpdatePetMutation = {
     identifier?: string | null;
     name?: string | null;
     passport?: string | null;
+    passportFilename?: string | null;
   };
 };
 
 export type PetPassportUploadUrlQueryVariables = Exact<{
-  contentType?: InputMaybe<Scalars["String"]>;
   originalFilename: Scalars["String"];
 }>;
 
@@ -152,7 +153,7 @@ export type PetPassportUploadUrlQuery = {
   __typename?: "Query";
   petPassportUploadUrl: {
     __typename?: "FileUploadResponse";
-    objectKey: string;
+    fileId: string;
     uploadUrl: any;
   };
 };
@@ -169,6 +170,7 @@ export type PetQuery = {
     identifier?: string | null;
     name?: string | null;
     passport?: string | null;
+    passportFilename?: string | null;
   };
 };
 
@@ -199,6 +201,7 @@ export type PetListQuery = {
       identifier?: string | null;
       name?: string | null;
       passport?: string | null;
+      passportFilename?: string | null;
     } | null> | null;
   };
 };
@@ -284,6 +287,10 @@ export const UpdatePetDocument = {
                 { kind: "Field", name: { kind: "Name", value: "identifier" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
                 { kind: "Field", name: { kind: "Name", value: "passport" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "passportFilename" },
+                },
               ],
             },
           },
@@ -300,14 +307,6 @@ export const PetPassportUploadUrlDocument = {
       operation: "query",
       name: { kind: "Name", value: "PetPassportUploadUrl" },
       variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "contentType" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
         {
           kind: "VariableDefinition",
           variable: {
@@ -332,14 +331,6 @@ export const PetPassportUploadUrlDocument = {
             arguments: [
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "contentType" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "contentType" },
-                },
-              },
-              {
-                kind: "Argument",
                 name: { kind: "Name", value: "originalFilename" },
                 value: {
                   kind: "Variable",
@@ -350,7 +341,7 @@ export const PetPassportUploadUrlDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "objectKey" } },
+                { kind: "Field", name: { kind: "Name", value: "fileId" } },
                 { kind: "Field", name: { kind: "Name", value: "uploadUrl" } },
               ],
             },
@@ -403,6 +394,10 @@ export const PetDocument = {
                 { kind: "Field", name: { kind: "Name", value: "identifier" } },
                 { kind: "Field", name: { kind: "Name", value: "name" } },
                 { kind: "Field", name: { kind: "Name", value: "passport" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "passportFilename" },
+                },
               ],
             },
           },
@@ -523,6 +518,10 @@ export const PetListDocument = {
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "passport" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "passportFilename" },
                       },
                     ],
                   },

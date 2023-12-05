@@ -49,6 +49,8 @@ directive @notEmpty on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @decimalMin(inclusive: Boolean = true, value: String!) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
+directive @fileId on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
 directive @javaType(name: String!) on SCALAR | OBJECT | INPUT_OBJECT
 
 "Query root"
@@ -56,15 +58,15 @@ type Query {
     checkAuthenticated: Void # a system query to check whether a user is authenticated or not. If not, GraphQL error is returned.
     userInfo: UserInfo # a system query to get an authenticated user details
     userPermissions: [String] # a system query to security roles for an authenticated user
-    pet(id: ID!): Pet!
-    petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
     petPassportDownloadUrl(id: ID!): Url!
-    petPassportUploadUrl(originalFilename: String!, contentType: String): FileUploadResponse!
+    petPassportUploadUrl(originalFilename: String!): FileUploadResponse!
+    petList(sort: [PetOrderByInput], page: OffsetPageInput): PetResultPage!
+    pet(id: ID!): Pet!
 }
 
 type Mutation {
-    deletePet(id: ID!): Void
     updatePet(input: PetInput!): Pet!
+    deletePet(id: ID!): Void
 }
 
 "Contains information about user"
@@ -78,17 +80,18 @@ type Pet {
     id: ID
     identifier: String
     name: String
-    passport: String
+    passport: String @fileId
+    passportFilename: String
+}
+
+type FileUploadResponse {
+    uploadUrl: Url!
+    fileId: String!
 }
 
 type PetResultPage {
     content: [Pet]
     totalElements: Long!
-}
-
-type FileUploadResponse {
-    objectKey: String!
-    uploadUrl: Url!
 }
 
 enum SortDirection {
@@ -110,7 +113,8 @@ input PetInput {
     id: ID
     identifier: String
     name: String
-    passport: String
+    passport: String @fileId
+    passportFilename: String
 }
 
 input PetOrderByInput {

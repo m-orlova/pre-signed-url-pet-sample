@@ -7,14 +7,15 @@ import {ButtonProps, useNotify, useRecordContext, useTranslate} from "react-admi
 import get from 'lodash/get';
 import {fileProvider} from "../../core/file/fileProvider";
 import {GetPreSignedUrlMeta} from "../../core/file/fileTypes";
+import {apolloClient} from "../../core/apollo/client";
 
 interface ExternalFileFieldProps {
-  downloadFileMeta: GetPreSignedUrlMeta | any
-  filename?: string
+  filename: string
+  preSignedUrlQueryOptions: GetPreSignedUrlMeta
 }
 
 export const ExternalFileField = (props: ExternalFileFieldProps & ButtonProps) => {
-  const {downloadFileMeta, filename, label, ...rest} = props;
+  const {preSignedUrlQueryOptions, filename, label, ...rest} = props;
   const notify = useNotify();
   const record = useRecordContext(props);
   const filenameValue = get(record, filename) || filename;
@@ -24,16 +25,21 @@ export const ExternalFileField = (props: ExternalFileFieldProps & ButtonProps) =
   const handleDownload = useCallback(async (event: any) => {
     event.stopPropagation();
 
-    fileProvider.download(downloadFileMeta, filenameValue)
-      .catch(error => {
-        console.log("File download error: ", error);
-        notify("file.downloadFail", {
-          type: "error", messageArgs: {
-            filename: filenameValue
-          }
+    const downloadUrl = await getPreSignedUrlInternal(preSignedUrlQueryOptions);
+    if (downloadUrl) {
+      fileProvider.download(downloadUrl, filenameValue)
+        .catch(error => {
+          console.log("File download error: ", error);
+          notify("file.downloadFail", {
+            type: "error", messageArgs: {
+              filename: filenameValue
+            }
+          });
         });
-      });
-  }, [notify, downloadFileMeta, filenameValue]);
+    } else {
+      notify("file.downloadFail")
+    }
+  }, [notify, preSignedUrlQueryOptions, filenameValue]);
 
   return (
     <>
@@ -78,3 +84,21 @@ export const FileLinkButton = styled(Button, {
     textDecorationColor: "inherit"
   },
 }));
+
+const getSelectionSetName = (query: Record<string, any>): string => {
+  return query.definitions[0].selectionSet.selections[0].name.value;
+};
+
+const getPreSignedUrlInternal = async (meta) => {
+  const {query, variables} = meta;
+  const selectionSetName = getSelectionSetName(query);
+
+  return await apolloClient.query({query, variables})
+    .then(value => {
+      console.log("Get pre-signed URL answer: ", value);
+      return value.data[selectionSetName];
+    }).catch(err => {
+      console.log("Unable to get pre-signed URL: ", err);
+      return undefined;
+    });
+}

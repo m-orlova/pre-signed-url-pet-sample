@@ -1,5 +1,3 @@
-import {FileUploadResponse} from "@amplicode/gql/graphql";
-
 export interface NewFile {
   src: string
   title: string
@@ -7,9 +5,8 @@ export interface NewFile {
 }
 
 export interface FileProvider {
-  getPreSignedUploadUrl: (meta: GetPreSignedUrlMeta) => Promise<FileUploadResponse>
-  download: (meta: GetPreSignedUrlMeta, filename: string) => Promise<void>
-  upload: (url: string, file: NewFile) => Promise<any>
+  download: (url: string, filename: string) => Promise<void>
+  upload: (url: string, file: File) => Promise<any>
 }
 
 export interface GetPreSignedUrlMeta {

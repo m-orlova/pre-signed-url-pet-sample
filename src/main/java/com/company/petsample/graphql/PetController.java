@@ -1,12 +1,14 @@
 package com.company.petsample.graphql;
 
+import com.amplicode.core.file.FileUploadResponse;
 import com.amplicode.core.graphql.annotation.GraphQLId;
 import com.amplicode.core.graphql.paging.OffsetPageInput;
 import com.amplicode.core.graphql.paging.ResultPage;
-import com.company.petsample.dto.FileUploadResponse;
 import com.company.petsample.entity.Pet;
-import com.company.petsample.minio.MinioStorage;
+import com.company.petsample.minio.MinioService;
 import com.company.petsample.repository.PetRepository;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,33 +21,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller
 public class PetController {
     private final PetRepository crudRepository;
-    private final MinioStorage minioStorage;
+    private final MinioService minioService;
+    private final String bucketName;
 
     public PetController(PetRepository crudRepository,
-                         MinioStorage minioStorage) {
+                         MinioService minioService,
+                         @Value("${minio.bucket-name}") String bucketName) {
         this.crudRepository = crudRepository;
-        this.minioStorage = minioStorage;
-    }
-
-    @MutationMapping(name = "deletePet")
-    @Transactional
-    public void delete(@GraphQLId @Argument @NonNull Long id) {
-        Pet entity = crudRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("Unable to find entity by id: %s ", id)));
-
-        crudRepository.delete(entity);
-        if (entity.getPassport() != null) {
-            minioStorage.delete(entity.getPassport());
-        }
+        this.minioService = minioService;
+        this.bucketName = bucketName;
     }
 
     @QueryMapping(name = "petList")
@@ -57,6 +50,11 @@ public class PetController {
                 .orElseGet(() -> PageRequest.ofSize(20).withSort(createSort(sortInput)));
         Page<Pet> pageData = crudRepository.findAll(page);
         return ResultPage.page(pageData.getContent(), pageData.getTotalElements());
+    }
+
+    @MutationMapping(name = "deletePet")
+    public void delete(@Argument @NonNull @GraphQLId Pet id) {
+        crudRepository.delete(id);
     }
 
     @QueryMapping(name = "pet")
@@ -82,10 +80,11 @@ public class PetController {
 
     @QueryMapping(name = "petPassportUploadUrl")
     @NonNull
-    public FileUploadResponse getPassportUploadUrl(@Argument @NonNull String originalFilename, @Argument String contentType) {
-        String objectKey = System.currentTimeMillis() + "_" + originalFilename;
-        URL uploadUrl = minioStorage.getPreSignedUploadUrl(objectKey, contentType, Duration.ofMinutes(10));
-        return new FileUploadResponse(objectKey, uploadUrl);
+    public FileUploadResponse getPassportUploadUrl(@Argument @NonNull String originalFilename) {
+        //Generate an identifier for new file
+        String fileId = UUID.randomUUID() + "." + FilenameUtils.getExtension(originalFilename);
+        URL uploadUrl = minioService.getPresignedUploadUrl(bucketName, fileId);
+        return new FileUploadResponse(fileId, uploadUrl);
     }
 
     @QueryMapping(name = "petPassportDownloadUrl")
@@ -94,7 +93,11 @@ public class PetController {
         Pet pet = crudRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entity not found by id: " + id));
 
-        return minioStorage.getPreSignedDownloadUrl(pet.getPassport(), Duration.ofMinutes(10));
+        String fileId = pet.getPassport();
+        if (fileId == null) {
+            throw new RuntimeException("File id is not set for entity: " + id);
+        }
+        return minioService.getPresignedDownloadUrl(bucketName, fileId);
     }
 
     protected Sort createSort(List<PetOrderByInput> sortInput) {
@@ -139,11 +142,8 @@ public class PetController {
         public SortDirection getDirection() {
             return direction;
         }
-
-        public void setDirection(SortDirection direction) {
-            this.direction = direction;
-        }
     }
+
 
     public enum SortDirection {ASC, DESC}
 

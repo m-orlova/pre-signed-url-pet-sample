@@ -1,5 +1,6 @@
 package com.company.petsample.entity;
 
+import com.amplicode.core.file.annotation.FileId;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,8 +17,20 @@ public class Pet {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "passport")
+    @FileId
+    @Column(name = "passport", nullable = false)
     private String passport;
+
+    @Column(name = "passport_filename")
+    private String passportFilename;
+
+    public String getPassportFilename() {
+        return passportFilename;
+    }
+
+    public void setPassportFilename(String passportFilename) {
+        this.passportFilename = passportFilename;
+    }
 
     public String getPassport() {
         return passport;
@@ -43,7 +56,6 @@ public class Pet {
         this.identifier = identifier;
     }
 
-
     public Long getId() {
         return id;
     }
@@ -51,5 +63,4 @@ public class Pet {
     public void setId(Long id) {
         this.id = id;
     }
-
 }

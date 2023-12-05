@@ -1,14 +1,13 @@
 import {gql} from "@amplicode/gql";
 import {ResultOf} from "@graphql-typed-document-node/core";
-import {useCallback} from "react";
+import React, {useCallback} from "react";
 import {
-  Edit,
-  FileField,
-  FileInput,
-  FunctionField,
+  Edit, FileField,
+  FileInput, FunctionField,
   SimpleForm,
   TextInput,
   useNotify,
+  useRecordContext,
   useRedirect,
   useUpdate,
   WithRecord
@@ -16,9 +15,12 @@ import {
 import {FieldValues, SubmitHandler} from "react-hook-form";
 import {checkServerValidationErrors} from "../../../core/error/checkServerValidationError";
 import {ExternalFileField} from "../../component/ExternalFileField";
-import {fileProvider} from "../../../core/file/fileProvider";
 import {isNewFile} from "../../../core/file/isNewFile";
 import axios from "axios";
+import {apolloClient} from "../../../core/apollo/client";
+import {NewFile} from "../../../core/file/fileTypes";
+import {TypedQueryDocumentNode} from "graphql/utilities";
+import {fileProvider} from "../../../core/file/fileProvider";
 
 const PET = gql(`query Pet($id: ID!) {
   pet(id: $id) {
@@ -26,6 +28,7 @@ const PET = gql(`query Pet($id: ID!) {
     identifier
     name
     passport
+    passportFilename
   }
 }`);
 const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
@@ -34,12 +37,13 @@ const UPDATE_PET = gql(`mutation UpdatePet($input: PetInput!) {
     identifier
     name
     passport
+    passportFilename
   }
 }`);
 
-const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($contentType: String, $originalFilename: String!) {
- petPassportUploadUrl(contentType: $contentType, originalFilename: $originalFilename) {
-  objectKey
+const PET_PASSPORT_UPLOAD_URL = gql(`query PetPassportUploadUrl($originalFilename: String!) {
+ petPassportUploadUrl(originalFilename: $originalFilename) {
+  fileId
   uploadUrl
   }
 }`);
@@ -65,24 +69,24 @@ export const PetEdit = () => {
       try {
         const passport = data.passport;
         if (isNewFile(passport)) {
-          //initialize data required to get a pre-signed URL for file upload
-          const meta = {
-            query: PET_PASSPORT_UPLOAD_URL,
+          const {rawFile} = passport as NewFile;
+
+          //get a pre-signed URL and generated file id
+          const {fileId, uploadUrl} = await apolloClient.query({
+            query: PET_PASSPORT_UPLOAD_URL as TypedQueryDocumentNode,
             variables: {
-              contentType: passport.rawFile.type,
-              originalFilename: passport.title
+              originalFilename: rawFile.name
             }
-          };
+          }).then(value => {
+            return value.data.petPassportUploadUrl;
+          });
 
-          //get a pre-signed URL for file upload
-          const fileUploadResponse = await fileProvider.getPreSignedUploadUrl(meta);
-          const uploadUrl = fileUploadResponse.uploadUrl;
+          //upload a file
+          await fileProvider.upload(uploadUrl, rawFile);
 
-          //upload file using pre-signed URL
-          await fileProvider.upload(uploadUrl, passport);
-
-          //set file-related properties
-          data.passport = fileUploadResponse.objectKey;
+          //set file-related fields
+          data.passport = fileId;
+          data.passportFilename = rawFile.name;
         }
 
         const params = {data, meta: {mutation: UPDATE_PET}};
@@ -120,13 +124,15 @@ export const PetEdit = () => {
                      accept="application/pdf" //set allowed content types, e.g. "application/pdf", "text/*", ["text/plain", "application/pdf"]
                      multiple={false}>
             <FunctionField render={fileRecord => isNewFile(fileRecord) ?
-              <FileField source="src" title="title" download={fileRecord.title}/> :
-              <ExternalFileField filename="passport.pdf" downloadFileMeta={{
-                query: PET_PASSPORT_DOWNLOAD_URL,
-                variables: {
-                  id: record.id
-                }
-              }}/>}/>
+              <FunctionField render={record => <FileField source="src" title="title" download={record.title}/>}/> :
+              <ExternalFileField filename={record.passportFilename}
+                                 preSignedUrlQueryOptions={{
+                                   query: PET_PASSPORT_DOWNLOAD_URL,
+                                   variables: {
+                                     id: record.id
+                                   }
+                                 }}/>}/>
+
           </FileInput>
         }/>
       </SimpleForm>

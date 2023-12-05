@@ -1,36 +1,29 @@
 package com.company.petsample.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import io.minio.MinioClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-
-import java.net.URI;
 
 @Configuration
 public class MinioConfiguration {
-    @Autowired
-    private MinioProperties minioProperties;
+    private final String endpoint;
+    private final String accessKey;
+    private final String secretKey;
 
-    @Bean
-    public S3Client s3Client() {
-        return S3Client.builder()
-                .region(Region.US_EAST_1) //default region in MinIO
-                .endpointOverride(URI.create(minioProperties.getEndpoint()))
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build();
+    public MinioConfiguration(@Value("${minio.endpoint}") String endpoint,
+                              @Value("${minio.access-key}") String accessKey,
+                              @Value("${minio.secret-key}") String secretKey) {
+        this.endpoint = endpoint;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
     }
 
     @Bean
-    public S3Presigner s3Presigner() {
-        return S3Presigner.builder()
-                .region(Region.US_EAST_1) //default region in MinIO
-                .endpointOverride(URI.create(minioProperties.getEndpoint()))
-                .credentialsProvider(DefaultCredentialsProvider.create())
+    public MinioClient minioClient() {
+        return MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(accessKey, secretKey)
                 .build();
     }
 }

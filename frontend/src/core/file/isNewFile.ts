@@ -1,3 +1,3 @@
-export const isNewFile = (value: any) => {
+export const isNewFile = (value: unknown) => {
   return value && value["rawFile"] !== undefined;
 }
